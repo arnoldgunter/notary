@@ -12,6 +12,8 @@ import {
 } from "./lib/db";
 import "./App.css";
 
+import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor'
+
 import Splash from "./components/splash";
 import NotebookExplorer from "./components/NotebookExplorer";
 
@@ -112,6 +114,8 @@ function App() {
           deleteNote={handleDeleteNote}
           updateNote={handleUpdateNote}
           updateNotebook={handleUpdateNotebook}
+          selectedNote={selectedNote}
+          setSelectedNote={setSelectedNote}
           init={init}
         />
       </div>
@@ -119,8 +123,8 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <h1>Hallo Welt</h1>
+    <div className="editor-container">
+      <SimpleEditor/>
     </div>
   );
 }

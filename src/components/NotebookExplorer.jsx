@@ -30,6 +30,8 @@ export default function NotebookExplorer({
   deleteNote,
   updateNote,
   updateNotebook,
+  setSelectedNote,
+  selectedNote,
   init,
 }) {
   const [showAddNotebook, setShowAddNotebook] = useState(false);
@@ -216,7 +218,11 @@ export default function NotebookExplorer({
             ) : (
               <div className={styles.notesContainer}>
                 {notes.map((note) => (
-                  <div key={note.id} className={styles.noteItem}>
+                  <div
+                    key={note.id}
+                    className={styles.noteItem}
+                    onClick={() => setSelectedNote(note.id)}
+                  >
                     <img src="/note.svg" alt="Note" />
                     {JSON.parse(note.content).name}
                   </div>
@@ -245,7 +251,8 @@ export default function NotebookExplorer({
                 if (!notebookContextId) return;
                 const newName = window.prompt(
                   "Enter new notebook name:",
-                  notebooks.find((nb) => nb.id === notebookContextId)?.name || ""
+                  notebooks.find((nb) => nb.id === notebookContextId)?.name ||
+                    "",
                 );
                 if (newName && newName.trim()) {
                   updateNotebook(notebookContextId, newName.trim());

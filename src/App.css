@@ -1,6 +1,11 @@
-* {
-    margin: 0;
-    padding: 0;
+@import './styles/_variables.scss';
+@import './styles/_keyframe-animations.scss';
+
+*,
+*::before,
+*::after {
+    margin: 0px;
+    padding: 0px;
     box-sizing: border-box;
 }
 
@@ -22,6 +27,13 @@ body {
     overflow-x: hidden;
     padding: 1rem;
     margin: 0 auto;
+    background-color: #2e2e2e;
+}
+
+.editor-container {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 @media (min-width: 640px) {
