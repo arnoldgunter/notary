@@ -95,7 +95,7 @@ function App() {
 
   if (selectedNote == null) {
     return (
-      <div className="app-container">
+      <div className="app-container" onContextMenu={(e) => e.preventDefault()}>
         <NotebookExplorer
           notebooks={notebooks}
           addNotebook={handleAddNotebook}
@@ -108,6 +108,10 @@ function App() {
           newNote={newNote}
           setNewNote={setNewNote}
           addNote={handleAddNote}
+          deleteNotebook={handleDeleteNotebook}
+          deleteNote={handleDeleteNote}
+          updateNote={handleUpdateNote}
+          updateNotebook={handleUpdateNotebook}
           init={init}
         />
       </div>

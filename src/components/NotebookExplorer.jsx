@@ -8,6 +8,8 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   XIcon,
+  PencilSimpleIcon,
+  TrashIcon,
 } from "@phosphor-icons/react";
 
 import styles from "../css/notebookexplorer.module.css";
@@ -24,6 +26,10 @@ export default function NotebookExplorer({
   newNote,
   setNewNote,
   addNote,
+  deleteNotebook,
+  deleteNote,
+  updateNote,
+  updateNotebook,
   init,
 }) {
   const [showAddNotebook, setShowAddNotebook] = useState(false);
@@ -32,6 +38,8 @@ export default function NotebookExplorer({
   const [searchBarVisible, setSearchBarVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [displayType, setDisplayType] = useState("grid");
+  const [folderContextVisible, setFolderContextVisible] = useState(false);
+  const [notebookContextId, setNotebookContextId] = useState(null);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -40,6 +48,7 @@ export default function NotebookExplorer({
         setSearchBarVisible(false);
         setSelectedNotebook(null);
         setShowNewNote(false);
+        setFolderContextVisible(false);
       }
     }
 
@@ -51,7 +60,13 @@ export default function NotebookExplorer({
       }
     }
 
-    if (showAddNotebook || searchBarVisible || selectedNotebook) {
+    if (
+      showAddNotebook ||
+      searchBarVisible ||
+      selectedNotebook ||
+      showNewNote ||
+      folderContextVisible
+    ) {
       document.addEventListener("keydown", handleKeyDown);
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -212,6 +227,55 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {folderContextVisible && (
+        <div
+          className={styles.overlay}
+          onClick={() => setFolderContextVisible(false)}
+        >
+          <div
+            className={[styles.folderContextMenu].join(" ")}
+            style={{
+              top: `${folderContextVisible.y}px`,
+              left: `${folderContextVisible.x}px`,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p
+              onClick={() => {
+                if (!notebookContextId) return;
+                const newName = window.prompt(
+                  "Enter new notebook name:",
+                  notebooks.find((nb) => nb.id === notebookContextId)?.name || ""
+                );
+                if (newName && newName.trim()) {
+                  updateNotebook(notebookContextId, newName.trim());
+                  setFolderContextVisible(false);
+                }
+                setFolderContextVisible(false);
+              }}
+            >
+              <PencilSimpleIcon size={24} /> Rename
+            </p>
+            <p
+              onClick={() => {
+                if (!notebookContextId) return;
+                if (
+                  window.confirm(
+                    "Are you sure you want to delete this notebook? All notes inside will be deleted as well.",
+                  )
+                ) {
+                  deleteNotebook(notebookContextId);
+                  setFolderContextVisible(false);
+                }
+                setFolderContextVisible(false);
+              }}
+            >
+              <TrashIcon size={24} /> Delete
+            </p>
+          </div>
+        </div>
+      )}
+
       <ul className={displayType === "grid" ? styles.grid : styles.list}>
         {notebooks
           .filter((nb) =>
@@ -221,6 +285,10 @@ export default function NotebookExplorer({
             <li
               key={nb.id}
               className={styles.notebookItem}
+              onContextMenu={(e) => {
+                setNotebookContextId(nb.id);
+                setFolderContextVisible({ x: e.clientX, y: e.clientY });
+              }}
               onClick={() => {
                 setSelectedNotebook(nb.id);
                 loadNotes(nb.id);
