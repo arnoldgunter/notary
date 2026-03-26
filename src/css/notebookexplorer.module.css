@@ -3,6 +3,7 @@
     min-height: 80vh;
     overflow-x: hidden;
     position: relative;
+    color: #f0f0f0;
 }
 
 .emptyContainer {
@@ -145,7 +146,7 @@
 .grid {
     display: flex;
     list-style: none;
-    padding-top: 1.5rem;
+    padding-top: 3rem;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -155,8 +156,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem;
-    margin: 0.5rem;
+    padding-inline: 1rem;
+    margin-bottom: 1rem;
+    width: 150px;
+    text-align: center;
     cursor: pointer;
     user-select: none;
     position: relative;
@@ -167,7 +170,7 @@
     justify-content: flex-start;
     flex-direction: column;
     list-style: none;
-    padding-top: 1.5rem;
+    padding-top: 3rem;
     gap: 0.5rem;
     cursor: pointer;
     user-select: none;
@@ -184,6 +187,11 @@
 .list .notebookItem img {
     width: 24px;
     height: 24px;
+}
+
+.list .notebookItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
 }
 
 .grid .notebookItem::before {
@@ -223,6 +231,8 @@
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 1rem;
+    overflow-y: scroll;
+    max-height: 100%;
 }
 
 .folderContextMenu {

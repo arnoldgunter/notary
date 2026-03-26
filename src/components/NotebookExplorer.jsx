@@ -27,62 +27,57 @@ export default function NotebookExplorer({
   setNewNote,
   addNote,
   deleteNotebook,
-  deleteNote,
-  updateNote,
   updateNotebook,
   setSelectedNote,
-  selectedNote,
   init,
 }) {
   const [showAddNotebook, setShowAddNotebook] = useState(false);
   const [showNewNote, setShowNewNote] = useState(false);
-  const dialogRef = useRef(null);
   const [searchBarVisible, setSearchBarVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [displayType, setDisplayType] = useState("grid");
-  const [folderContextVisible, setFolderContextVisible] = useState(false);
+  const [folderContextVisible, setFolderContextVisible] = useState(null);
   const [notebookContextId, setNotebookContextId] = useState(null);
+
+  const dialogRef = useRef(null);
+
+  const filteredNotebooks = notebooks.filter((nb) =>
+    nb.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.key === "Escape") {
         setShowAddNotebook(false);
         setSearchBarVisible(false);
-        setSelectedNotebook(null);
         setShowNewNote(false);
-        setFolderContextVisible(false);
+        setFolderContextVisible(null);
+        setNotebookContextId(null);
+        setSelectedNotebook(null);
       }
     }
 
     function handleClickOutside(e) {
       if (dialogRef.current && !dialogRef.current.contains(e.target)) {
         setShowAddNotebook(false);
-        setSelectedNotebook(null);
         setShowNewNote(false);
+        setSelectedNotebook(null);
+        setNotebookContextId(null);
       }
     }
 
-    if (
-      showAddNotebook ||
-      searchBarVisible ||
-      selectedNotebook ||
-      showNewNote ||
-      folderContextVisible
-    ) {
-      document.addEventListener("keydown", handleKeyDown);
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.addEventListener("keydown", handleKeyDown);
-    }
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showAddNotebook, searchBarVisible, selectedNotebook]);
+  }, []);
 
   return (
     <div className={styles.explorerContainer}>
+      {/* EMPTY STATE */}
       {notebooks.length === 0 && (
         <div className={styles.emptyContainer}>
           <h2 className={styles.emptyTitle}>No notebooks yet</h2>
@@ -99,6 +94,7 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {/* ADD NOTEBOOK MODAL */}
       {showAddNotebook && (
         <div className={styles.overlay}>
           <div ref={dialogRef} className={styles.addNotebookDialog}>
@@ -106,14 +102,18 @@ export default function NotebookExplorer({
               type="text"
               placeholder="Enter name"
               className={styles.addNotebookInput}
-              onInput={(e) => setNewNotebookName(e.target.value)}
+              value={newNotebookName}
+              onChange={(e) => setNewNotebookName(e.target.value)}
             />
             <button
               className={styles.addNotebookButton}
-              onClick={() => {
-                if (!newNotebookName) return;
-                addNotebook();
+              onClick={async () => {
+                if (!newNotebookName.trim()) return;
+
+                await addNotebook();
+
                 setShowAddNotebook(false);
+                setNewNotebookName("");
               }}
             >
               <PlusIcon size={32} className={styles.addNotebookIcon} />
@@ -123,6 +123,7 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {/* TOOLBAR */}
       {notebooks.length > 0 && (
         <div className={styles.toolBar}>
           <FolderSimplePlusIcon
@@ -131,25 +132,27 @@ export default function NotebookExplorer({
             onClick={() => setShowAddNotebook(true)}
           />
           <FunnelSimpleIcon size={24} className={styles.toolBarIcon} />
-          {displayType === "grid" && (
+
+          {displayType === "grid" ? (
             <ListIcon
               size={24}
               className={styles.toolBarIcon}
               onClick={() => setDisplayType("list")}
             />
-          )}
-          {displayType === "list" && (
+          ) : (
             <SquaresFourIcon
               size={24}
               className={styles.toolBarIcon}
               onClick={() => setDisplayType("grid")}
             />
           )}
+
           <ArrowsClockwiseIcon
             size={24}
             className={styles.toolBarIcon}
-            onClick={() => init()}
+            onClick={init}
           />
+
           <MagnifyingGlassIcon
             size={24}
             className={styles.toolBarIcon}
@@ -158,6 +161,7 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {/* SEARCH */}
       {searchBarVisible && (
         <div className={styles.searchBar}>
           <input
@@ -165,7 +169,7 @@ export default function NotebookExplorer({
             placeholder="Search notebooks..."
             className={styles.searchInput}
             value={searchTerm}
-            onInput={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <XIcon
             size={32}
@@ -178,6 +182,7 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {/* NOTES OVERLAY */}
       {selectedNotebook && (
         <div className={styles.overlay}>
           <div className={styles.noteList} ref={dialogRef}>
@@ -188,13 +193,13 @@ export default function NotebookExplorer({
                   placeholder="Enter note title..."
                   className={styles.newNoteInput}
                   value={newNote}
-                  onInput={(e) => setNewNote(e.target.value)}
+                  onChange={(e) => setNewNote(e.target.value)}
                 />
                 <button
                   className={styles.addNoteButton}
-                  onClick={() => {
-                    if (!newNote) return;
-                    addNote();
+                  onClick={async () => {
+                    if (!newNote.trim()) return;
+                    await addNote();
                     setShowNewNote(false);
                   }}
                 >
@@ -211,6 +216,7 @@ export default function NotebookExplorer({
                 New Note
               </div>
             )}
+
             {notes.length === 0 ? (
               <p className={styles.emptyMessage}>
                 No notes yet. Create your first note!
@@ -221,10 +227,17 @@ export default function NotebookExplorer({
                   <div
                     key={note.id}
                     className={styles.noteItem}
-                    onClick={() => setSelectedNote(note.id)}
+                    onClick={() => setSelectedNote(note)}
                   >
                     <img src="/note.svg" alt="Note" />
-                    {JSON.parse(note.content).name}
+                    {(() => {
+                      try {
+                        const parsed = JSON.parse(note.content);
+                        return parsed.name || "Untitled";
+                      } catch {
+                        return "Untitled";
+                      }
+                    })()}
                   </div>
                 ))}
               </div>
@@ -233,13 +246,14 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {/* CONTEXT MENU */}
       {folderContextVisible && (
         <div
           className={styles.overlay}
-          onClick={() => setFolderContextVisible(false)}
+          onClick={() => setFolderContextVisible(null)}
         >
           <div
-            className={[styles.folderContextMenu].join(" ")}
+            className={styles.folderContextMenu}
             style={{
               top: `${folderContextVisible.y}px`,
               left: `${folderContextVisible.x}px`,
@@ -249,32 +263,32 @@ export default function NotebookExplorer({
             <p
               onClick={() => {
                 if (!notebookContextId) return;
+
                 const newName = window.prompt(
                   "Enter new notebook name:",
                   notebooks.find((nb) => nb.id === notebookContextId)?.name ||
                     "",
                 );
-                if (newName && newName.trim()) {
+
+                if (newName?.trim()) {
                   updateNotebook(notebookContextId, newName.trim());
-                  setFolderContextVisible(false);
                 }
-                setFolderContextVisible(false);
+
+                setFolderContextVisible(null);
               }}
             >
               <PencilSimpleIcon size={24} /> Rename
             </p>
+
             <p
               onClick={() => {
                 if (!notebookContextId) return;
-                if (
-                  window.confirm(
-                    "Are you sure you want to delete this notebook? All notes inside will be deleted as well.",
-                  )
-                ) {
+
+                if (window.confirm("Delete this notebook and all its notes?")) {
                   deleteNotebook(notebookContextId);
-                  setFolderContextVisible(false);
                 }
-                setFolderContextVisible(false);
+
+                setFolderContextVisible(null);
               }}
             >
               <TrashIcon size={24} /> Delete
@@ -283,30 +297,28 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {/* NOTEBOOK LIST */}
       <ul className={displayType === "grid" ? styles.grid : styles.list}>
-        {notebooks
-          .filter((nb) =>
-            nb.name.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-          .map((nb) => (
-            <li
-              key={nb.id}
-              className={styles.notebookItem}
-              onContextMenu={(e) => {
-                setNotebookContextId(nb.id);
-                setFolderContextVisible({ x: e.clientX, y: e.clientY });
-              }}
-              onClick={() => {
-                setSelectedNotebook(nb.id);
-                loadNotes(nb.id);
-              }}
-            >
-              <img src="/folder.svg" alt="Notebook" />
-              {nb.name.length > 20 && displayType === "grid"
-                ? nb.name.slice(0, 17) + "..."
-                : nb.name}
-            </li>
-          ))}
+        {filteredNotebooks.map((nb) => (
+          <li
+            key={nb.id}
+            className={styles.notebookItem}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setNotebookContextId(nb.id);
+              setFolderContextVisible({ x: e.clientX, y: e.clientY });
+            }}
+            onClick={() => {
+              setSelectedNotebook(nb.id);
+              loadNotes(nb.id);
+            }}
+          >
+            <img src="/folder.svg" alt="Notebook" />
+            {nb.name.length > 20 && displayType === "grid"
+              ? nb.name.slice(0, 17) + "..."
+              : nb.name}
+          </li>
+        ))}
       </ul>
     </div>
   );

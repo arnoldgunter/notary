@@ -13,7 +13,7 @@ function useFileUpload(options) {
   const [fileItems, setFileItems] = useState([])
 
   const uploadFile = async file => {
-    if (file.size > options.maxSize) {
+    if (options.maxSize > 0 && file.size > options.maxSize) {
       const error = new Error(`File size exceeds maximum allowed (${options.maxSize / 1024 / 1024}MB)`)
       options.onError?.(error)
       return null
@@ -52,7 +52,7 @@ function useFileUpload(options) {
               ? { ...item, status: "success", url, progress: 100 }
               : item))
         options.onSuccess?.(url)
-        return url
+        return { file, url }
       }
 
       return null
@@ -87,7 +87,7 @@ function useFileUpload(options) {
     const results = await Promise.all(uploadPromises)
 
     // Filter out null results (failed uploads)
-    return results.filter(url => url !== null);
+    return results.filter(Boolean);
   }
 
   const removeFileItem = (fileId) => {
@@ -326,35 +326,38 @@ export const ImageUploadNode = (props) => {
     useFileUpload(uploadOptions)
 
   const handleUpload = async (files) => {
-    const urls = await uploadFiles(files)
+    const uploadedItems = await uploadFiles(files)
+    if (uploadedItems.length === 0) return
 
-    if (urls.length > 0) {
-      const pos = props.getPos()
+    let pos = -1
+    try {
+      pos = props.getPos()
+    } catch {
+      return
+    }
 
-      if (isValidPosition(pos)) {
-        const imageNodes = urls.map((url, index) => {
-          const filename =
-            files[index]?.name.replace(/\.[^/.]+$/, "") || "unknown"
-          return {
-            type: extension.options.type,
-            attrs: {
-              ...extension.options,
-              src: url,
-              alt: filename,
-              title: filename,
-            },
-          }
-        })
+    if (isValidPosition(pos)) {
+      const imageNodes = uploadedItems.map(({ url, file }) => {
+        const filename = file?.name?.replace(/\.[^/.]+$/, "") || "unknown"
+        return {
+          type: extension.options.type,
+          attrs: {
+            src: url,
+            alt: filename,
+            title: filename,
+          },
+        }
+      })
 
-        props.editor
-          .chain()
-          .focus()
-          .deleteRange({ from: pos, to: pos + props.node.nodeSize })
-          .insertContentAt(pos, imageNodes)
-          .run()
+      props.editor
+        .chain()
+        .focus()
+        .deleteRange({ from: pos, to: pos + props.node.nodeSize })
+        .insertContentAt(pos, imageNodes)
+        .run()
 
-        focusNextNode(props.editor)
-      }
+      clearAllFiles()
+      focusNextNode(props.editor)
     }
   }
 

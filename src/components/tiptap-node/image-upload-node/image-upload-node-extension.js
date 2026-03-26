@@ -1,6 +1,7 @@
 import { mergeAttributes, Node } from "@tiptap/react"
 import { ReactNodeViewRenderer } from "@tiptap/react"
 import { ImageUploadNode as ImageUploadNodeComponent } from "@/components/tiptap-node/image-upload-node/image-upload-node"
+import { MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 
 /**
  * A Tiptap node extension that creates an image upload component.
@@ -22,7 +23,7 @@ export const ImageUploadNode = Node.create({
       type: "image",
       accept: "image/*",
       limit: 1,
-      maxSize: 0,
+      maxSize: MAX_FILE_SIZE,
       upload: undefined,
       onError: undefined,
       onSuccess: undefined,

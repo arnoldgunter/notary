@@ -56,17 +56,15 @@ export function isMac() {
  * @param capitalize - Whether to capitalize the key (default: true)
  * @returns Formatted shortcut key symbol
  */
-export const formatShortcutKey = (
-  key,
-  isMac,
-  capitalize = true
-) => {
-  if (isMac) {
+export const formatShortcutKey = (key, isMacPlatform, capitalize = true) => {
+  if (!key) return ""
+
+  if (isMacPlatform) {
     const lowerKey = key.toLowerCase()
-    return MAC_SYMBOLS[lowerKey] || (capitalize ? key.toUpperCase() : key);
+    return MAC_SYMBOLS[lowerKey] || (capitalize ? key.toUpperCase() : key)
   }
 
-  return capitalize ? key.charAt(0).toUpperCase() + key.slice(1) : key;
+  return capitalize ? key.charAt(0).toUpperCase() + key.slice(1) : key
 }
 
 /**
@@ -78,13 +76,15 @@ export const formatShortcutKey = (
  */
 export const parseShortcutKeys = (props) => {
   const { shortcutKeys, delimiter = "+", capitalize = true } = props
-
   if (!shortcutKeys) return []
+
+  const isMacPlatform = isMac()
 
   return shortcutKeys
     .split(delimiter)
     .map((key) => key.trim())
-    .map((key) => formatShortcutKey(key, isMac(), capitalize));
+    .filter(Boolean)
+    .map((key) => formatShortcutKey(key, isMacPlatform, capitalize))
 }
 
 /**
@@ -342,7 +342,33 @@ export const handleImageUpload = async (file, onProgress, abortSignal) => {
     onProgress?.({ progress })
   }
 
-  return "/images/tiptap-ui-placeholder-image.jpg"
+  // Return a real image source instead of a static placeholder path that may not exist.
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result)
+      } else {
+        reject(new Error("Failed to convert file to data URL"))
+      }
+    }
+
+    reader.onerror = () => reject(new Error("Failed to read image file"))
+
+    if (abortSignal) {
+      abortSignal.addEventListener(
+        "abort",
+        () => {
+          reader.abort()
+          reject(new Error("Upload cancelled"))
+        },
+        { once: true }
+      )
+    }
+
+    reader.readAsDataURL(file)
+  })
 }
 
 const ATTR_WHITESPACE =
