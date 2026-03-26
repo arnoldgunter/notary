@@ -18,7 +18,7 @@ body {
     line-height: 1.5;
     color: var(--tt-theme-text, var(--tt-gray-light-900));
     font-size: clamp(1rem, 2.5vw, 1.25rem);
-    background-color: var(--tt-bg-color);
+    background-color: #2e2e2e;
 }
 
 .app-container {
@@ -27,7 +27,7 @@ body {
     overflow-x: hidden;
     padding: 1rem;
     margin: 0 auto;
-    background-color: var(--tt-bg-color);
+    background-color: #2e2e2e;
 }
 
 .editor-container {
