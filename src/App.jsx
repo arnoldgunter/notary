@@ -5,14 +5,16 @@ import {
   getNotes,
   addNote,
   getNotebooks,
+  getNoteById,
   deleteNote,
   deleteNotebook,
   updateNote,
   updateNotebook,
 } from "./lib/db";
 import "./App.css";
+import { XIcon } from "@phosphor-icons/react";
 
-import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor'
+import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 
 import Splash from "./components/splash";
 import NotebookExplorer from "./components/NotebookExplorer";
@@ -26,68 +28,99 @@ function App() {
   const [newNote, setNewNote] = useState("");
   const [notes, setNotes] = useState([]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("selectedNoteId");
+    if (saved) {
+      try {
+        const noteId = JSON.parse(saved);
+
+        const fetchNote = async () => {
+          const note = await getNoteById(noteId);
+          if (note) setSelectedNote(note);
+        };
+
+        fetchNote();
+      } catch {}
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedNote) {
+      localStorage.setItem("selectedNoteId", JSON.stringify(selectedNote.id));
+    } else {
+      localStorage.removeItem("selectedNoteId");
+    }
+  }, [selectedNote?.id]);
+
   const init = async () => {
     await initDB();
     await loadNotebooks();
     setLoading(false);
   };
 
-  // DB + Notebooks initial laden
   useEffect(() => {
     init();
   }, []);
 
-  // Alle Notebooks laden
   const loadNotebooks = async () => {
     const notebooks = await getNotebooks();
     setNotebooks(notebooks);
   };
 
-  // Notes für ausgewähltes Notebook laden
   const loadNotes = async (notebookId) => {
     if (!notebookId) return;
     const n = await getNotes(notebookId);
     setNotes(n);
   };
 
-  // Neues Notebook hinzufügen
   const handleAddNotebook = async () => {
-    if (!newNotebookName) return;
-    const id = await addNotebook(newNotebookName);
+    if (!newNotebookName.trim()) return;
+    await addNotebook(newNotebookName);
     setNewNotebookName("");
     await loadNotebooks();
-    setSelectedNotebook(id);
   };
 
-  // Neue Note hinzufügen
   const handleAddNote = async () => {
-    if (!newNote || !selectedNotebook) return;
-    await addNote(selectedNotebook, { name: newNote });
+    if (!selectedNotebook) return;
+
+    await addNote(selectedNotebook, {
+      name: newNote.trim() || "Untitled",
+      content: {
+        type: "doc",
+        content: [],
+      },
+    });
+
     setNewNote("");
     await loadNotes(selectedNotebook);
   };
 
-  // Delete note
   const handleDeleteNote = async (noteId) => {
     await deleteNote(noteId);
     await loadNotes(selectedNotebook);
+
+    if (selectedNote?.id === noteId) {
+      setSelectedNote(null);
+    }
   };
 
-  // Delete notebook
   const handleDeleteNotebook = async (notebookId) => {
     await deleteNotebook(notebookId);
     await loadNotebooks();
     setSelectedNotebook(null);
     setNotes([]);
+    setSelectedNote(null);
   };
 
-  // Update note
-  const handleUpdateNote = async (noteId, content, important) => {
-    await updateNote(noteId, content, important);
-    await loadNotes(selectedNotebook);
+  const handleUpdateNote = async (noteId, content) => {
+    try {
+      const parsedContent = typeof content === "string" ? JSON.parse(content) : content;
+      await updateNote(noteId, JSON.stringify(parsedContent));
+    } catch (error) {
+      console.error("Failed to update note:", error);
+    }
   };
 
-  // Update notebook
   const handleUpdateNotebook = async (notebookId, name) => {
     await updateNotebook(notebookId, name);
     await loadNotebooks();
@@ -95,7 +128,7 @@ function App() {
 
   if (loading) return <Splash />;
 
-  if (selectedNote == null) {
+  if (!selectedNote) {
     return (
       <div className="app-container" onContextMenu={(e) => e.preventDefault()}>
         <NotebookExplorer
@@ -124,7 +157,19 @@ function App() {
 
   return (
     <div className="editor-container">
-      <SimpleEditor/>
+      <XIcon
+        size={24}
+        onClick={() => {
+          setSelectedNote(null)
+          loadNotes(selectedNotebook)
+        }}
+        className="closeNoteBtn"
+      />
+
+      <SimpleEditor
+        note={selectedNote}
+        onUpdate={(content) => handleUpdateNote(selectedNote.id, content)}
+      />
     </div>
   );
 }

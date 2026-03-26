@@ -16,9 +16,9 @@ html {
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.5;
-    color: #f0f0f0;
+    color: var(--tt-theme-text, var(--tt-gray-light-900));
     font-size: clamp(1rem, 2.5vw, 1.25rem);
-    background-color: #2e2e2e;
+    background-color: var(--tt-bg-color);
 }
 
 .app-container {
@@ -27,13 +27,22 @@ body {
     overflow-x: hidden;
     padding: 1rem;
     margin: 0 auto;
-    background-color: #2e2e2e;
+    background-color: var(--tt-bg-color);
 }
 
 .editor-container {
     width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
+}
+
+.closeNoteBtn {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    cursor: pointer;
+    opacity: 0.5;
+    z-index: 100;
 }
 
 @media (min-width: 640px) {
