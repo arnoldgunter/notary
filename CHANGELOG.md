@@ -16,6 +16,7 @@
 - Improve list spacing/alignment and note card readability (image sizing, wrapping, font sizing).
 - Adjust `SimpleEditor` mobile toolbar breakpoint from `480px` to `800px`.
 - Normalize formatting of `updateNote` in `db.js`.
+- Replace template `README.md` with project-specific documentation including setup, architecture, and rationale for using Tauri over Electron.
 
 ### Fixed
 
