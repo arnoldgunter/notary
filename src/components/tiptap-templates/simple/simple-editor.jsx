@@ -136,7 +136,7 @@ const MainToolbarContent = ({
 export function SimpleEditor({ note, onUpdate }) {
   const saveTimeout = useRef(null);
   const { width = 1024 } = useWindowSize();
-  const isMobile = width <= 480;
+  const isMobile = width <= 800;
 
   let parsedContent = {
     type: "doc",

@@ -233,7 +233,10 @@ export default function NotebookExplorer({
                     {(() => {
                       try {
                         const parsed = JSON.parse(note.content);
-                        return parsed.name || "Untitled";
+                        const name = parsed.name || "Untitled";
+                        return name.length > 25
+                          ? name.slice(0, 25) + "..."
+                          : name;
                       } catch {
                         return "Untitled";
                       }
@@ -313,10 +316,27 @@ export default function NotebookExplorer({
               loadNotes(nb.id);
             }}
           >
-            <img src="/folder.svg" alt="Notebook" />
-            {nb.name.length > 20 && displayType === "grid"
-              ? nb.name.slice(0, 17) + "..."
-              : nb.name}
+            <span>
+              <img src="/folder.svg" alt="Notebook" />
+              {nb.name.length > 20 && displayType === "grid" ? (
+                <p>{nb.name.slice(0, 17) + "..."}</p>
+              ) : (
+                <p>{nb.name}</p>
+              )}
+            </span>
+            {displayType === "list" && (
+              <div className={styles.listDetails}>
+                <p>{nb.notes_count} notes</p>
+                <p>
+                  Created:{" "}
+                  {new Date(nb.created_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+            )}
           </li>
         ))}
       </ul>

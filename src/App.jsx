@@ -114,7 +114,8 @@ function App() {
 
   const handleUpdateNote = async (noteId, content) => {
     try {
-      const parsedContent = typeof content === "string" ? JSON.parse(content) : content;
+      const parsedContent =
+        typeof content === "string" ? JSON.parse(content) : content;
       await updateNote(noteId, JSON.stringify(parsedContent));
     } catch (error) {
       console.error("Failed to update note:", error);
@@ -157,14 +158,19 @@ function App() {
 
   return (
     <div className="editor-container">
-      <XIcon
-        size={24}
-        onClick={() => {
-          setSelectedNote(null)
-          loadNotes(selectedNotebook)
-        }}
-        className="closeNoteBtn"
-      />
+      <div className="note-header">
+        <XIcon
+          size={24}
+          onClick={() => {
+            setSelectedNote(null);
+            loadNotes(selectedNotebook);
+          }}
+          className="closeNoteBtn"
+        />
+        {selectedNote.name.length > 20
+          ? <p>{selectedNote.name.slice(0, 20) + "..."}</p>
+          : <p>{selectedNote.name}</p>}
+      </div>
 
       <SimpleEditor
         note={selectedNote}

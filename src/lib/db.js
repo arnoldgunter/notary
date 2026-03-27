@@ -11,7 +11,8 @@ export async function initDB() {
     CREATE TABLE IF NOT EXISTS notebooks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      notes_count INTEGER DEFAULT 0
     )
   `);
 
@@ -52,6 +53,10 @@ export async function addNote(notebookId, content, important = false) {
     "INSERT INTO notes (notebook_id, name, content, important) VALUES ($1, $2, $3, $4)",
     [notebookId, content.name, JSON.stringify(content), important ? 1 : 0],
   );
+  await database.execute(
+    "UPDATE notebooks SET notes_count = notes_count + 1 WHERE id = $1",
+    [notebookId],
+  );
 }
 
 export async function getNotes(notebookId) {
@@ -74,6 +79,10 @@ export async function getNoteById(noteId) {
 export async function deleteNote(noteId) {
   const database = await initDB();
   await database.execute("DELETE FROM notes WHERE id = $1", [noteId]);
+  await database.execute(
+    "UPDATE notebooks SET notes_count = notes_count - 1 WHERE id = (SELECT notebook_id FROM notes WHERE id = $1)",
+    [noteId],
+  );
 }
 
 export async function deleteNotebook(notebookId) {
@@ -85,12 +94,12 @@ export async function deleteNotebook(notebookId) {
 }
 
 export async function updateNote(noteId, content, important = 0) {
-  const database = await initDB()
+  const database = await initDB();
 
   await database.execute(
-    'UPDATE notes SET content = $1, important = $2 WHERE id = $3',
-    [content, important ? 1 : 0, noteId]
-  )
+    "UPDATE notes SET content = $1, important = $2 WHERE id = $3",
+    [content, important ? 1 : 0, noteId],
+  );
 }
 
 export async function updateNotebook(notebookId, name) {
