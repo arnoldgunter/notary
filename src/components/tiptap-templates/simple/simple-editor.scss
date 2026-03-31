@@ -72,6 +72,19 @@
   padding: 3rem 3rem 30vh;
 }
 
+.simple-editor-content .tiptap.ProseMirror.simple-editor mark[data-important="true"] {
+  background-color: var(--tt-color-red-dec-4);
+  color: inherit;
+}
+
+.simple-editor-content.show-important-only .tiptap.ProseMirror.simple-editor > * {
+  display: none;
+}
+
+.simple-editor-content.show-important-only .tiptap.ProseMirror.simple-editor > p:has(mark[data-important="true"]) {
+  display: block;
+}
+
 @media screen and (max-width: 480px) {
   .simple-editor-content .tiptap.ProseMirror.simple-editor {
     padding: 1rem 1.5rem 30vh;

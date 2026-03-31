@@ -23,7 +23,7 @@ body {
 
 .app-container {
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     overflow-x: hidden;
     padding: 1rem;
     margin: 0 auto;
@@ -31,19 +31,22 @@ body {
 }
 
 .editor-container {
+    min-width: 1200px;
     width: 100%;
-    min-height: 100vh;
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .note-header {
     position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
+    top: 0.75rem;
+    left: 2rem;
     display: flex;
     align-items: center;
     opacity: 0.5;
     z-index: 100;
+    transform: rotate(90deg);
+    transform-origin: left top;
 }
 
 .closeNoteBtn {

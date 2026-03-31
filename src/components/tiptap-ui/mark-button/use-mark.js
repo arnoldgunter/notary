@@ -13,6 +13,7 @@ import { ItalicIcon } from "@/components/tiptap-icons/italic-icon"
 import { StrikeIcon } from "@/components/tiptap-icons/strike-icon"
 import { SubscriptIcon } from "@/components/tiptap-icons/subscript-icon"
 import { SuperscriptIcon } from "@/components/tiptap-icons/superscript-icon"
+import { CheckIcon } from "@/components/tiptap-icons/check-icon"
 import { UnderlineIcon } from "@/components/tiptap-icons/underline-icon";
 
 export const markIcons = {
@@ -23,6 +24,7 @@ export const markIcons = {
   code: Code2Icon,
   superscript: SuperscriptIcon,
   subscript: SubscriptIcon,
+  important: CheckIcon,
 }
 
 export const MARK_SHORTCUT_KEYS = {
@@ -33,6 +35,7 @@ export const MARK_SHORTCUT_KEYS = {
   code: "mod+e",
   superscript: "mod+.",
   subscript: "mod+,",
+  important: "mod+shift+m",
 }
 
 /**

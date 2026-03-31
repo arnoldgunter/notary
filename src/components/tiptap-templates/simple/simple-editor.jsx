@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
 
 // --- Tiptap Core Extensions ---
@@ -25,6 +25,7 @@ import {
 // --- Tiptap Node ---
 import { ImageUploadNode } from "@/components/tiptap-node/image-upload-node/image-upload-node-extension";
 import { HorizontalRule } from "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension";
+import { ImportantMark } from "@/components/tiptap-extension/important-mark-extension";
 import "@/components/tiptap-node/blockquote-node/blockquote-node.scss";
 import "@/components/tiptap-node/code-block-node/code-block-node.scss";
 import "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node.scss";
@@ -52,9 +53,11 @@ import {
 import { MarkButton } from "@/components/tiptap-ui/mark-button";
 import { TextAlignButton } from "@/components/tiptap-ui/text-align-button";
 import { UndoRedoButton } from "@/components/tiptap-ui/undo-redo-button";
+import { Button } from "@/components/tiptap-ui-primitive/button";
 
 // --- Icons ---
 import { ArrowLeftIcon } from "@/components/tiptap-icons/arrow-left-icon";
+import { CheckIcon } from "@/components/tiptap-icons/check-icon";
 import { HighlighterIcon } from "@/components/tiptap-icons/highlighter-icon";
 import { LinkIcon } from "@/components/tiptap-icons/link-icon";
 
@@ -76,6 +79,8 @@ const MainToolbarContent = ({
   onHighlighterClick = () => {},
   onLinkClick = () => {},
   isMobile = false,
+  showImportantOnly = false,
+  onToggleImportantOnly = () => {},
 }) => {
   return (
     <>
@@ -101,6 +106,7 @@ const MainToolbarContent = ({
         <MarkButton type="strike" />
         <MarkButton type="code" />
         <MarkButton type="underline" />
+        <MarkButton type="important" />
         {!isMobile ? (
           <ColorHighlightPopover />
         ) : (
@@ -124,6 +130,23 @@ const MainToolbarContent = ({
       <ToolbarGroup>
         <ImageUploadButton text="Add" />
       </ToolbarGroup>
+      <ToolbarSeparator />
+      <ToolbarGroup>
+        <Button
+          type="button"
+          variant="ghost"
+          role="button"
+          tabIndex={-1}
+          aria-label="Show important paragraphs only"
+          aria-pressed={showImportantOnly}
+          data-active-state={showImportantOnly ? "on" : "off"}
+          tooltip="Show important only"
+          onClick={onToggleImportantOnly}
+        >
+          <CheckIcon className="tiptap-button-icon" />
+          <span className="tiptap-button-text">Important only</span>
+        </Button>
+      </ToolbarGroup>
       <Spacer />
       {isMobile && <ToolbarSeparator />}
       <ToolbarGroup>
@@ -135,6 +158,7 @@ const MainToolbarContent = ({
 
 export function SimpleEditor({ note, onUpdate }) {
   const saveTimeout = useRef(null);
+  const [showImportantOnly, setShowImportantOnly] = useState(false);
   const { width = 1024 } = useWindowSize();
   const isMobile = width <= 800;
 
@@ -179,6 +203,7 @@ export function SimpleEditor({ note, onUpdate }) {
       Typography,
       Superscript,
       Subscript,
+      ImportantMark,
       Selection,
       ImageUploadNode.configure({
         accept: "image/*",
@@ -223,9 +248,16 @@ export function SimpleEditor({ note, onUpdate }) {
             isMobile={isMobile}
             onHighlighterClick={() => {}}
             onLinkClick={() => {}}
+            showImportantOnly={showImportantOnly}
+            onToggleImportantOnly={() =>
+              setShowImportantOnly((current) => !current)
+            }
           />
         </Toolbar>
-        <EditorContent editor={editor} className="simple-editor-content" />
+        <EditorContent
+          editor={editor}
+          className={`simple-editor-content${showImportantOnly ? " show-important-only" : ""}`}
+        />
       </EditorContext.Provider>
     </div>
   );
