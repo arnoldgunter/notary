@@ -27,6 +27,7 @@
 - Increase editor content max width from `648px` to `800px` and remove the Google Fonts `@import` from editor SCSS.
 - Update dropdown menu dark-mode CSS variable scoping from nested `:root .dark` to a dedicated top-level `.dark` selector.
 - Refine notebook list row layout by switching list items to CSS grid with explicit `2fr 1fr` columns.
+- Normalize link URLs in the link popover (auto-prefix `https://` for host-like inputs) before setting/opening links, improving link reliability and safety.
 
 ### Fixed
 

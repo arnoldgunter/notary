@@ -9,6 +9,22 @@ import { LinkIcon } from "@/components/tiptap-icons/link-icon"
 // --- Lib ---
 import { isMarkInSchema, isNodeTypeSelected, sanitizeUrl } from "@/lib/tiptap-utils";
 
+function normalizeLinkUrl(input) {
+  const value = `${input || ""}`.trim()
+
+  if (!value) return ""
+
+  const hasExplicitProtocol = /^(https?|ftps?|mailto|tel|callto|sms|cid|xmpp):/i.test(value)
+  if (hasExplicitProtocol) return value
+
+  const looksLikeWebHost = /^(localhost|\d{1,3}(?:\.\d{1,3}){3}|[^\s/]+\.[^\s/]+)(:\d+)?(?:[/?#].*)?$/i.test(value)
+  if (looksLikeWebHost) {
+    return `https://${value}`
+  }
+
+  return value
+}
+
 /**
  * Checks if a link can be set in the current editor state
  */
@@ -100,8 +116,9 @@ export function useLinkHandler(props) {
     const isEmpty = selection.empty
 
     let chain = editor.chain().focus()
+    const normalizedUrl = normalizeLinkUrl(url)
 
-    chain = chain.extendMarkRange("link").setLink({ href: url })
+    chain = chain.extendMarkRange("link").setLink({ href: normalizedUrl })
 
     if (isEmpty) {
       chain = chain.insertContent({ type: "text", text: url })
@@ -129,7 +146,7 @@ export function useLinkHandler(props) {
   const openLink = useCallback((target = "_blank", features = "noopener,noreferrer") => {
     if (!url) return
 
-    const safeUrl = sanitizeUrl(url, window.location.href)
+    const safeUrl = sanitizeUrl(normalizeLinkUrl(url), window.location.href)
     if (safeUrl !== "#") {
       window.open(safeUrl, target, features)
     }
