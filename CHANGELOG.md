@@ -23,6 +23,10 @@
 - Update editor layout sizing/overflow and rotate the note header for a side-oriented header presentation.
 - Add styles for important marks and `show-important-only` filtering behavior in the editor content area.
 - Normalize formatting/style in `node-background-extension.js`.
+- Rename editor shell class from `editor-container` to `editor-wrapper` and move editor theme tokens (`--tt-theme-text`, `--tt-theme-bg`) into app-level wrapper styling.
+- Increase editor content max width from `648px` to `800px` and remove the Google Fonts `@import` from editor SCSS.
+- Update dropdown menu dark-mode CSS variable scoping from nested `:root .dark` to a dedicated top-level `.dark` selector.
+- Refine notebook list row layout by switching list items to CSS grid with explicit `2fr 1fr` columns.
 
 ### Fixed
 

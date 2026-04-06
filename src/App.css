@@ -30,11 +30,23 @@ body {
     background-color: #2e2e2e;
 }
 
-.editor-container {
+.editor-wrapper {
+  --tt-theme-text: var(--tt-gray-light-900);
+  --tt-theme-bg: var(--tt-gray-light-100);
+
+  .dark & {
+    --tt-theme-text: var(--tt-gray-dark-900);
+    --tt-theme-bg: var(--tt-gray-dark-100);
+  }
+}
+
+.editor-wrapper {
     min-width: 1200px;
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    color: var(--tt-theme-text);
+    background-color: var(--tt-theme-bg);
 }
 
 .note-header {

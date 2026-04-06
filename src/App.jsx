@@ -157,7 +157,7 @@ function App() {
   }
 
   return (
-    <div className="editor-container">
+    <div className="editor-wrapper">
       <div className="note-header">
         <XIcon
           size={24}

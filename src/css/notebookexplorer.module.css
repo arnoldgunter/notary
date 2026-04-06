@@ -176,10 +176,9 @@
 }
 
 .list .notebookItem {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
     align-items: center;
-    justify-content: space-between;
     gap: 2rem;
 }
 
