@@ -28,6 +28,9 @@
 - Update dropdown menu dark-mode CSS variable scoping from nested `:root .dark` to a dedicated top-level `.dark` selector.
 - Refine notebook list row layout by switching list items to CSS grid with explicit `2fr 1fr` columns.
 - Normalize link URLs in the link popover (auto-prefix `https://` for host-like inputs) before setting/opening links, improving link reliability and safety.
+- Add notebook sorting controls in the explorer via a funnel-triggered sort dialog with radio options for `name` and `created_at`.
+- Apply sort state to filtered notebook results and update outside-click/Escape behavior to close sort and search popovers consistently.
+- Add dedicated `sortDialog` styling for the new sort UI, including custom radio appearance.
 
 ### Fixed
 

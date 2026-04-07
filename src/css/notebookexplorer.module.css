@@ -40,6 +40,73 @@
     cursor: pointer;
 }
 
+.sortDialog {
+    position: fixed;
+    top: 3.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    width: clamp(150px, 25%, 300px);
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: 0.5rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.sortDialog span {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.sortDialog span p {
+    width: 100%;
+}
+
+.sortDialog input[type="radio"] {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1rem;
+    height: 1rem;
+    border: 0.1rem solid currentColor;
+    border-radius: 1000px;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+}
+
+.sortDialog input[type="radio"]::before {
+    content: "";
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1rem 1rem #f24f00;
+    background-color: CanvasText;
+}
+
+.sortDialog input[type="radio"]:checked::before {
+    transform: scale(1);
+}
+
+.sortDialog input[type="radio"]:focus {
+    outline: none;
+}
+
 .searchBar {
     position: fixed;
     top: 3.5rem;

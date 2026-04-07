@@ -10,6 +10,7 @@ import {
   XIcon,
   PencilSimpleIcon,
   TrashIcon,
+  CheckIcon,
 } from "@phosphor-icons/react";
 
 import styles from "../css/notebookexplorer.module.css";
@@ -38,12 +39,21 @@ export default function NotebookExplorer({
   const [displayType, setDisplayType] = useState("grid");
   const [folderContextVisible, setFolderContextVisible] = useState(null);
   const [notebookContextId, setNotebookContextId] = useState(null);
+  const [sortDialogVisible, setSortDialogVisible] = useState(false);
+  const [sortBy, setSortBy] = useState("created_at");
 
   const dialogRef = useRef(null);
 
-  const filteredNotebooks = notebooks.filter((nb) =>
-    nb.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filteredNotebooks = notebooks
+    .filter((nb) => nb.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      if (sortBy === "created_at") {
+        return new Date(b.created_at) - new Date(a.created_at);
+      } else if (sortBy === "name") {
+        return a.name.localeCompare(b.name);
+      }
+      return 0;
+    });
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -54,6 +64,7 @@ export default function NotebookExplorer({
         setFolderContextVisible(null);
         setNotebookContextId(null);
         setSelectedNotebook(null);
+        setSortDialogVisible(false);
       }
     }
 
@@ -63,6 +74,8 @@ export default function NotebookExplorer({
         setShowNewNote(false);
         setSelectedNotebook(null);
         setNotebookContextId(null);
+        setSortDialogVisible(false);
+        setSearchBarVisible(false);
       }
     }
 
@@ -131,7 +144,11 @@ export default function NotebookExplorer({
             className={styles.toolBarIcon}
             onClick={() => setShowAddNotebook(true)}
           />
-          <FunnelSimpleIcon size={24} className={styles.toolBarIcon} />
+          <FunnelSimpleIcon
+            size={24}
+            className={styles.toolBarIcon}
+            onClick={() => setSortDialogVisible(true)}
+          />
 
           {displayType === "grid" ? (
             <ListIcon
@@ -161,9 +178,35 @@ export default function NotebookExplorer({
         </div>
       )}
 
+      {/* SORT DIALOG */}
+      {sortDialogVisible && (
+        <div className={styles.sortDialog} ref={dialogRef}>
+          <span onClick={() => setSortBy("name")}>
+            <input
+              type="radio"
+              name="sortBy"
+              value="name"
+              checked={sortBy === "name"}
+              onChange={() => setSortBy("name")}
+            />
+            <p>Name</p>
+          </span>
+          <span onClick={() => setSortBy("created_at")}>
+            <input
+              type="radio"
+              name="sortBy"
+              value="created_at"
+              checked={sortBy === "created_at"}
+              onChange={() => setSortBy("created_at")}
+            />
+            <p>Created At</p>
+          </span>
+        </div>
+      )}
+
       {/* SEARCH */}
       {searchBarVisible && (
-        <div className={styles.searchBar}>
+        <div className={styles.searchBar} ref={dialogRef}>
           <input
             type="text"
             placeholder="Search notebooks..."
