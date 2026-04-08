@@ -9,6 +9,8 @@
 - Add new `ImportantMark` TipTap extension to mark important text segments.
 - Add `important` mark support to mark-button utilities including icon mapping and shortcut (`mod+shift+m`).
 - Add an `Important only` toolbar toggle to show only paragraphs containing important marks.
+- Add a note-level context menu in the notes overlay with actions to rename and delete notes.
+- Add dedicated note context overlay/menu styles (`noteContextOverlay`, `noteContextMenu`) for right-click actions on notes.
 
 ### Changed
 
@@ -31,6 +33,9 @@
 - Add notebook sorting controls in the explorer via a funnel-triggered sort dialog with radio options for `name` and `created_at`.
 - Apply sort state to filtered notebook results and update outside-click/Escape behavior to close sort and search popovers consistently.
 - Add dedicated `sortDialog` styling for the new sort UI, including custom radio appearance.
+- Improve sort option labels for clarity (`Name (A-Z)`, `Created At (Newest First)`).
+- Extend explorer outside-click and Escape handling to also close note context state consistently.
+- Wire note right-click actions to note CRUD handlers by passing `deleteNote` and `updateNote` into `NotebookExplorer`.
 
 ### Fixed
 

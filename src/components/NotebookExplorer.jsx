@@ -10,7 +10,6 @@ import {
   XIcon,
   PencilSimpleIcon,
   TrashIcon,
-  CheckIcon,
 } from "@phosphor-icons/react";
 
 import styles from "../css/notebookexplorer.module.css";
@@ -28,6 +27,8 @@ export default function NotebookExplorer({
   setNewNote,
   addNote,
   deleteNotebook,
+  deleteNote,
+  updateNote,
   updateNotebook,
   setSelectedNote,
   init,
@@ -41,8 +42,11 @@ export default function NotebookExplorer({
   const [notebookContextId, setNotebookContextId] = useState(null);
   const [sortDialogVisible, setSortDialogVisible] = useState(false);
   const [sortBy, setSortBy] = useState("created_at");
+  const [noteContextVisible, setNoteContextVisible] = useState(null);
+  const [noteContextId, setNoteContextId] = useState(null);
 
   const dialogRef = useRef(null);
+  const noteContextMenuRef = useRef(null);
 
   const filteredNotebooks = notebooks
     .filter((nb) => nb.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -63,17 +67,26 @@ export default function NotebookExplorer({
         setShowNewNote(false);
         setFolderContextVisible(null);
         setNotebookContextId(null);
+        setNoteContextVisible(null);
+        setNoteContextId(null);
         setSelectedNotebook(null);
         setSortDialogVisible(false);
       }
     }
 
     function handleClickOutside(e) {
-      if (dialogRef.current && !dialogRef.current.contains(e.target)) {
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(e.target) &&
+        (!noteContextMenuRef.current ||
+          !noteContextMenuRef.current.contains(e.target))
+      ) {
         setShowAddNotebook(false);
         setShowNewNote(false);
         setSelectedNotebook(null);
         setNotebookContextId(null);
+        setNoteContextVisible(null);
+        setNoteContextId(null);
         setSortDialogVisible(false);
         setSearchBarVisible(false);
       }
@@ -189,7 +202,7 @@ export default function NotebookExplorer({
               checked={sortBy === "name"}
               onChange={() => setSortBy("name")}
             />
-            <p>Name</p>
+            <p>Name (A-Z)</p>
           </span>
           <span onClick={() => setSortBy("created_at")}>
             <input
@@ -199,7 +212,7 @@ export default function NotebookExplorer({
               checked={sortBy === "created_at"}
               onChange={() => setSortBy("created_at")}
             />
-            <p>Created At</p>
+            <p>Created At (Newest First)</p>
           </span>
         </div>
       )}
@@ -222,6 +235,79 @@ export default function NotebookExplorer({
               setSearchTerm("");
             }}
           />
+        </div>
+      )}
+
+      {/* NOTE CONTEXT MENU */}
+      {noteContextVisible && (
+        <div
+          className={`${styles.overlay} ${styles.noteContextOverlay}`}
+          onClick={() => setNoteContextVisible(null)}
+        >
+          <div
+            ref={noteContextMenuRef}
+            className={styles.noteContextMenu}
+            style={{
+              top: `${noteContextVisible.y}px`,
+              left: `${noteContextVisible.x}px`,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p
+              onClick={async () => {
+                if (!noteContextId) return;
+
+                const note = notes.find((n) => n.id === noteContextId);
+                if (!note) return;
+
+                let parsedContent;
+                try {
+                  parsedContent = JSON.parse(note.content);
+                } catch {
+                  parsedContent = {
+                    name: "Untitled",
+                    content: {
+                      type: "doc",
+                      content: [],
+                    },
+                  };
+                }
+
+                const newName = window.prompt(
+                  "Enter new note title:",
+                  parsedContent.name || "Untitled",
+                );
+
+                if (newName?.trim()) {
+                  const updatedContent = {
+                    ...parsedContent,
+                    name: newName.trim(),
+                  };
+
+                  await updateNote(noteContextId, updatedContent);
+                  await loadNotes(selectedNotebook);
+                }
+
+                setNoteContextVisible(null);
+              }}
+            >
+              <PencilSimpleIcon size={24} /> Rename
+            </p>
+
+            <p
+              onClick={async () => {
+                if (!noteContextId) return;
+
+                if (window.confirm("Delete this note?")) {
+                  await deleteNote(noteContextId);
+                }
+
+                setNoteContextVisible(null);
+              }}
+            >
+              <TrashIcon size={24} /> Delete
+            </p>
+          </div>
         </div>
       )}
 
@@ -271,6 +357,11 @@ export default function NotebookExplorer({
                     key={note.id}
                     className={styles.noteItem}
                     onClick={() => setSelectedNote(note)}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setNoteContextId(note.id);
+                      setNoteContextVisible({ x: e.clientX, y: e.clientY });
+                    }}
                   >
                     <img src="/note.svg" alt="Note" />
                     {(() => {

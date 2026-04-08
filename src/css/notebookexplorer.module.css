@@ -154,6 +154,11 @@
     animation: fadeIn 0.3s ease;
 }
 
+.noteContextOverlay {
+    z-index: 30;
+    background-color: transparent;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -328,6 +333,31 @@
 }
 
 .folderContextMenu p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #f0f0f0;
+}
+
+.noteContextMenu {
+    position: absolute;
+    width: 150px;
+    height: fit-content;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 31;
+}
+
+.noteContextMenu p {
     display: flex;
     align-items: center;
     gap: 0.5rem;
