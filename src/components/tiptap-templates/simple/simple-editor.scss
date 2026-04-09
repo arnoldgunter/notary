@@ -71,8 +71,8 @@
 }
 
 .simple-editor-content .tiptap.ProseMirror.simple-editor mark[data-important="true"] {
-  background-color: var(--tt-color-red-dec-4);
-  color: inherit;
+  background-color: var(--tt-color-red-dec-1);
+  color: var(--tt-color-red-inc-5);
 }
 
 .simple-editor-content.show-important-only .tiptap.ProseMirror.simple-editor > * {
