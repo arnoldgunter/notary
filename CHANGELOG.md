@@ -15,6 +15,7 @@
 
 ### Changed
 
+- Refactor `show-important-only` editor filtering selector to hide all blocks not containing `mark[data-important="true"]` via `:not(:has(...))`, broadening support beyond paragraph-only matching.
 - Refine `mark[data-important="true"]` editor styling by switching to lighter red background and explicit high-contrast text color in `simple-editor.scss`.
 - Wrap the editor close button in a `.note-header` container and display the current note title beside the icon.
 - Truncate long note titles in both editor header and note cards for cleaner display.
