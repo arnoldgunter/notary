@@ -4,6 +4,7 @@
 
 ### Added
 
+- Add complete README screenshot set in `public/` (`screenshot_1.png` to `screenshot_7.png`) for product documentation.
 - Add notebook list metadata in list view (`notes_count` and formatted creation date).
 - Add `notes_count` column to the `notebooks` table schema.
 - Add new `ImportantMark` TipTap extension to mark important text segments.
@@ -22,6 +23,7 @@
 - Adjust `SimpleEditor` mobile toolbar breakpoint from `480px` to `800px`.
 - Normalize formatting of `updateNote` in `db.js`.
 - Replace template `README.md` with project-specific documentation including setup, architecture, and rationale for using Tauri over Electron.
+- Professionalize `README.md` with expanded product overview, detailed feature breakdown, architecture sections, and embedded screenshot walkthrough.
 - Update editor layout sizing/overflow and rotate the note header for a side-oriented header presentation.
 - Add styles for important marks and `show-important-only` filtering behavior in the editor content area.
 - Normalize formatting/style in `node-background-extension.js`.
