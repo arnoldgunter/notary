@@ -318,6 +318,10 @@
     max-height: 100%;
 }
 
+.notebookTitle {
+    font-size: 1.5rem;
+}
+
 .folderContextMenu {
     position: absolute;
     width: 150px;

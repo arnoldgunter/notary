@@ -315,6 +315,11 @@ export default function NotebookExplorer({
       {selectedNotebook && (
         <div className={styles.overlay}>
           <div className={styles.noteList} ref={dialogRef}>
+            <p className={styles.notebookTitle}>
+              Notebook: {" "}
+              {notebooks.find((nb) => nb.id === selectedNotebook)?.name ||
+                "Untitled Notebook"}
+            </p>
             {showNewNote ? (
               <div className={styles.newNoteContainer}>
                 <input

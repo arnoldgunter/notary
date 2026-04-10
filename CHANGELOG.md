@@ -15,6 +15,7 @@
 
 ### Changed
 
+- Show the currently selected notebook name at the top of the notes overlay in `NotebookExplorer` and add matching `.notebookTitle` styling.
 - Refactor `show-important-only` editor filtering selector to hide all blocks not containing `mark[data-important="true"]` via `:not(:has(...))`, broadening support beyond paragraph-only matching.
 - Refine `mark[data-important="true"]` editor styling by switching to lighter red background and explicit high-contrast text color in `simple-editor.scss`.
 - Wrap the editor close button in a `.note-header` container and display the current note title beside the icon.
